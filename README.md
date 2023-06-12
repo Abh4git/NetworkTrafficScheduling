@@ -3,6 +3,9 @@ Network Traffic Scheduling using RL
 
 Dependencies: Ray.RLLib, Gym, Tensorflow
 
+Approach in Learning
+Deep Q Network (Training starts) -> Actor -Critic Policy Proximity Optimization (PPO)-> Optimal Results array -> Plot as gannt chart
+
 Steps
 1. Register the Environment with OpenAI Gym by going to the src folder (where setup.py is) and run command pip install -e . (pip need to be 23.1 or so)
 2. Run: python main.py
