@@ -61,6 +61,8 @@ class NwsEnv(gym.Env):
         self.illegal_actions = None
         self.action_illegal_no_op = None
         self.link_legal = None
+        self.flow_deadlines =[140,140,140,140,140,140] #currently all set to 100
+        self.total_time_per_flow ={'0':0,'1':0,'2':0,'3':0,'4':0,'5':0}
         # initial values for variables used for representation
         self.start_timestamp = datetime.datetime.now().timestamp()
         self.sum_op = 0
@@ -158,6 +160,7 @@ class NwsEnv(gym.Env):
         self.illegal_actions = np.zeros((self.links, self.flows), dtype=bool)
         self.action_illegal_no_op = np.zeros(self.flows, dtype=bool)
         self.link_legal = np.zeros(self.links, dtype=bool)
+        self.total_time_per_flow = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0}
         for flow in range(self.flows):
             needed_link = self.instance_matrix[flow][0][0]
             self.needed_link_flows[flow] = needed_link
@@ -313,34 +316,52 @@ class NwsEnv(gym.Env):
             current_time_step_flow = self.todo_time_step_flow[action]
             link_needed = self.needed_link_flows[action]
             time_needed = self.instance_matrix[action][current_time_step_flow][1]
-            reward += time_needed
-            self.time_until_available_link[link_needed] = time_needed
-            self.time_until_finish_current_op_flows[action] = time_needed
-            self.state[action][1] = time_needed / self.max_time_op
-            to_add_time_step = self.current_time_step + time_needed
-            if to_add_time_step not in self.next_time_step:
-                index = bisect.bisect_left(self.next_time_step, to_add_time_step)
-                self.next_time_step.insert(index, to_add_time_step)
-                self.next_flows.insert(index, action)
-            self.solution[action][current_time_step_flow] = self.current_time_step
-            for flow in range(self.flows):
-                if (
-                    self.needed_link_flows[flow] == link_needed
-                    and self.legal_actions[flow]
-                ):
-                    self.legal_actions[flow] = False
-                    self.nb_legal_actions -= 1
-            self.nb_link_legal -= 1
-            self.link_legal[link_needed] = False
-            for flow in range(self.flows):
-                if self.illegal_actions[link_needed][flow]:
-                    self.action_illegal_no_op[flow] = False
-                    self.illegal_actions[link_needed][flow] = False
-            # if we can't allocate new job in the current timestep, we pass to the next one
-            while self.nb_link_legal == 0 and len(self.next_time_step) > 0:
-                reward -= self.increase_time_step()
-            self._prioritization_non_final()
-            self._check_no_op()
+            #print("Time needed:",time_needed)
+            #print("Action:", action)
+            self.total_time_per_flow [str(action)]=int(self.total_time_per_flow [str(action)])+int(time_needed)
+            if ( (int(self.total_time_per_flow [str(action)]))> self.flow_deadlines[action]):
+                reward -= time_needed
+                print ("Deadlines:",self.flow_deadlines[action])
+                print("Total time per flow:", self.total_time_per_flow [str(action)])
+                #scaled_reward = self._reward_scaler(reward)
+                #self._prioritization_non_final()
+                #self._check_no_op()
+
+                #return (
+                #    self._get_current_state_representation(),
+                #    scaled_reward,
+                #    self._is_done(),
+                #    {},
+                #)
+            else:
+                reward += time_needed
+                self.time_until_available_link[link_needed] = time_needed
+                self.time_until_finish_current_op_flows[action] = time_needed
+                self.state[action][1] = time_needed / self.max_time_op
+                to_add_time_step = self.current_time_step + time_needed
+                if to_add_time_step not in self.next_time_step:
+                    index = bisect.bisect_left(self.next_time_step, to_add_time_step)
+                    self.next_time_step.insert(index, to_add_time_step)
+                    self.next_flows.insert(index, action)
+                self.solution[action][current_time_step_flow] = self.current_time_step
+                for flow in range(self.flows):
+                    if (
+                        self.needed_link_flows[flow] == link_needed
+                        and self.legal_actions[flow]
+                    ):
+                        self.legal_actions[flow] = False
+                        self.nb_legal_actions -= 1
+                self.nb_link_legal -= 1
+                self.link_legal[link_needed] = False
+                for flow in range(self.flows):
+                    if self.illegal_actions[link_needed][flow]:
+                        self.action_illegal_no_op[flow] = False
+                        self.illegal_actions[link_needed][flow] = False
+                # if we can't allocate new job in the current timestep, we pass to the next one
+                while self.nb_link_legal == 0 and len(self.next_time_step) > 0:
+                    reward -= self.increase_time_step()
+                self._prioritization_non_final()
+                self._check_no_op()
             # we then need to scale the reward
             scaled_reward = self._reward_scaler(reward)
             return (
