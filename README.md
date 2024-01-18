@@ -1,4 +1,4 @@
-# NetworkTrafficScheduling 
+# NetworkTrafficScheduling (PhD Work Part1)
 Network Traffic Scheduling using RL - First part of PhD Work
 
 Dependencies: Ray.RLLib, Gym, Tensorflow
