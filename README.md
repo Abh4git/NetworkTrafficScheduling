@@ -12,5 +12,5 @@ Steps
 3. To see the final solution python show_results.py 
 4. To have the schedule plotted as gannt chart run python plotschedule.py
 
-Inspired and started based on Job Shop Scheduling done at the below link
+Inspired and started based on Job Shop Scheduling done at the below link    
 https://github.com/prosysscience/RL-Job-Shop-Scheduling
