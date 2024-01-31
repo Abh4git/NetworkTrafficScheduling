@@ -12,5 +12,8 @@ Steps
 3. To see the final solution python show_results.py 
 4. To have the schedule plotted as gannt chart run python plotschedule.py
 
+The details of the solution approach can be found at   
+https://github.com/Abh4git/NetworkTrafficScheduling/blob/main/presentation/Part1-Traffic_Scheduling.pdf
+
 Inspired and started based on Job Shop Scheduling done at the below link    
 https://github.com/prosysscience/RL-Job-Shop-Scheduling
