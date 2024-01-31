@@ -1,1 +1,5 @@
 This is the place to hold presentations
+
+Changes in OMNETPP to support
+NTSNGateScheduleConfigurator executeTSNsched -commeted out implementation as no need for jar file invocation for us
+NTSNGateScheduleConfigurator computeGateScheduling -No computation required as out output.json is from RL
