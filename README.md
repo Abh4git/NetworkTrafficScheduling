@@ -17,3 +17,7 @@ https://github.com/Abh4git/NetworkTrafficScheduling/blob/main/presentation/Part1
 
 Inspired and started based on Job Shop Scheduling done at the below link    
 https://github.com/prosysscience/RL-Job-Shop-Scheduling
+
+Our work is now a publication with Springer 
+https://link.springer.com/chapter/10.1007/978-981-97-2004-0_13
+
